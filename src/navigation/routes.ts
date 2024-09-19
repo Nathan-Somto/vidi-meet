@@ -1,0 +1,16 @@
+export enum Routes {
+    WELCOME = 'WelcomeScreen',
+    HOME = 'HomeScreen',
+    MAINTABS = 'MainTabs',
+    UPCOMINGMEETINGS = 'UpcomingMeetingsScreen',
+    PREVIOUSMEETINGS = 'PreviousMeetingsScreen',
+    MEETINGRECORDINGS = 'MeetingRecordingsScreen',
+    SCHEDULEMEETING = 'ScheduleMeetingScreen',
+    JOINMEETING = 'JoinMeetingScreen',
+    MEETINGSETUP = 'MeetingSetupScreen',
+    NEWMEETING = 'NewMeetingScreen',
+    VIDEOPLAYER = 'VideoPlayerScreen',
+    CALL = 'CallScreen',
+    AUTH = 'AuthScreen',
+    AUTHSTACK= 'AuthStack',
+}
