@@ -36,10 +36,11 @@ const Button = ({
   isLoading,
   variant = 'primary',
   size = 'default',
+  color='text',
   ...props
 }: Props) => {
-  const py = size === 'icon' ? 'xs_4' : size === 'default' ? 'sm_8' : 'm_16';
-  const px = size === 'icon' ? 'sm_8' : size === 'default' ? 'm_16' : 'm_24';
+  const py = size === 'icon' || size === 'sm' ? 'xs_4' : size === 'default' ? 'sm_8' : 'm_16';
+  const px = size === 'icon' || size === 'sm' ? 'sm_8' : size === 'default' ? 'm_16' : 'm_24';
   const theme = useTheme();
   return (
     <BaseButton
@@ -55,7 +56,7 @@ const Button = ({
       {...props}>
       {isLoading ? <ActivityIndicator color={theme.colors.text} /> : null}
       {label ? (
-        <Text variant="body" color={'text'} textAlign="center" width="100%" fontWeight={'600'}>
+        <Text variant="body" color={color} textAlign="center" fontWeight={'600'}>
           {label}
         </Text>
       ) : (

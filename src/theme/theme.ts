@@ -48,6 +48,7 @@ const theme = createTheme({
     s_4: 4,
     m_8: 8,
     l_12: 12,
+    l_16: 16,
     xl_24: 24,
   },
   textVariants: {
@@ -72,6 +73,9 @@ const theme = createTheme({
     },
   },
   buttonVariants: {
+    link: {
+      backgroundColor:'transparent'
+    },
     primary: {
       backgroundColor: 'primary',
       borderRadius: 's_4',
