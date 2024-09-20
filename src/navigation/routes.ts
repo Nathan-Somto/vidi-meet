@@ -1,16 +1,20 @@
 export enum Routes {
-    WELCOME = 'WelcomeScreen',
-    HOME = 'HomeScreen',
-    MAINTABS = 'MainTabs',
-    UPCOMINGMEETINGS = 'UpcomingMeetingsScreen',
-    PREVIOUSMEETINGS = 'PreviousMeetingsScreen',
-    MEETINGRECORDINGS = 'MeetingRecordingsScreen',
-    SCHEDULEMEETING = 'ScheduleMeetingScreen',
-    JOINMEETING = 'JoinMeetingScreen',
-    MEETINGSETUP = 'MeetingSetupScreen',
-    NEWMEETING = 'NewMeetingScreen',
-    VIDEOPLAYER = 'VideoPlayerScreen',
-    CALL = 'CallScreen',
-    AUTH = 'AuthScreen',
+    // SCREENS
+    WELCOME = 'Welcome',
+    HOME = 'Home',
+    UPCOMINGMEETINGS = 'Upcoming Meetings',
+    PREVIOUSMEETINGS = 'Previous Meetings',
+    MEETINGRECORDINGS = 'Meeting Recordings',
+    SCHEDULEMEETING = 'Schedule Meeting',
+    JOINMEETING = 'Join Meeting',
+    MEETINGSETUP = 'Meeting Setup',
+    NEWMEETING = 'New Meeting',
+    VIDEOPLAYER = 'Video Player',
+    CALL = 'Call',
+    AUTH = 'Auth',
+    VERIFY = 'Verify',
+    // NAVIGATION
     AUTHSTACK= 'AuthStack',
+    CALLSTACK = 'CallStack',
+    MAINTABS = 'MainTabs'
 }

@@ -6,7 +6,19 @@ import JoinMeetingScreen from '@/screens/Call/JoinMeeting';
 import ScheduleMeetingScreen from '@/screens/Call/ScheduleMeeting';
 import VideoPlayerScreen from '@/screens/Call/VideoPlayerScreen';
 import MeetingSetupScreen from '@/screens/Call/MeetingSetupScreen';
-const Stack = createStackNavigator();
+export type CallStackParamList = {
+  [Routes.CALL]: undefined;
+  [Routes.JOINMEETING]: {
+    inviteId?: string;
+  };
+  [Routes.SCHEDULEMEETING]: undefined;
+  [Routes.VIDEOPLAYER]: {
+    url: string;
+  };
+  [Routes.MEETINGSETUP]: undefined;
+};
+
+const Stack = createStackNavigator<CallStackParamList>();
 export default function CallStack() {
   return (
     <Stack.Navigator>
