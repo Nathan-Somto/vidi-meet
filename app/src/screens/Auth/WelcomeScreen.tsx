@@ -1,11 +1,11 @@
 import React, { useState, useRef } from 'react';
-import { Container } from '@/components/Container';
-import { Box, Button, Text, useTheme } from '@/theme';
+import { Container } from 'app/src/components/Container';
+import { Box, Button, Text, useTheme } from 'app/src/theme';
 import { Image, FlatList, View, StyleSheet, ViewToken } from 'react-native';
-import { welcomeData } from '@/constants';
+import { welcomeData } from 'app/src/constants';
 import { Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { Routes } from '@/navigation/routes';
+import { Routes } from 'app/src/navigation/routes';
 export default function WelcomeScreen() {
   const router = useNavigation();
   const DeviceWidth = () => Dimensions.get('window').width;

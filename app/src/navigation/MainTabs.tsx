@@ -1,14 +1,14 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Routes } from './routes';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { HomeIcon, PreviousIcon, UpcomingIcon, VideoIcon } from '@/components/icons';
-import HomeScreen from '@/screens/Main/HomeScreen';
-import { Box, Text, useTheme } from '@/theme';
-import { BackButton } from '@/components/BackButton';
+import { HomeIcon, PreviousIcon, UpcomingIcon, VideoIcon } from 'app/src/components/icons';
+import HomeScreen from 'app/src/screens/Main/HomeScreen';
+import { Box, Text, useTheme } from 'app/src/theme';
+import { BackButton } from 'app/src/components/BackButton';
 import { Image } from 'react-native';
-import UpcomingMeetingsScreen from '@/screens/Main/UpcomingMeetingsScreen';
-import NewMeetingScreen from '@/screens/Main/NewMeetingScreen';
-import PreviousMeetingScreen from '@/screens/Main/PreviousMeetingScreen';
+import UpcomingMeetingsScreen from 'app/src/screens/Main/UpcomingMeetingsScreen';
+import NewMeetingScreen from 'app/src/screens/Main/NewMeetingScreen';
+import PreviousMeetingScreen from 'app/src/screens/Main/PreviousMeetingScreen';
 import dummyAvatar from '../../assets/images/avatar.png';
 import logo from '../../assets/icon.png';
 export type MainTabParamList = {

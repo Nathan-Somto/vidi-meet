@@ -1,5 +1,5 @@
 import { Feather } from '@expo/vector-icons';
-import { Button, Text, useTheme } from '@/theme';
+import { Button, Text, useTheme } from 'app/src/theme';
 
 export const BackButton = ({ text = 'Back' }: { text?: string }) => {
   const { colors } = useTheme();

@@ -1,13 +1,13 @@
-import { Container } from '@/components/Container';
-import { Box, Button, Text } from '@/theme';
+import { Container } from 'app/src/components/Container';
+import { Box, Button, Text } from 'app/src/theme';
 import React from 'react';
 import { Dimensions, ImageBackground, ScrollView, TouchableOpacity } from 'react-native';
 import banner from '../../../assets/images/banner.png';
 import { FlatList } from 'react-native-gesture-handler';
-import { ActionButtons } from '@/constants';
+import { ActionButtons } from 'app/src/constants';
 import { useNavigation } from '@react-navigation/native';
-import { Routes } from '@/navigation/routes';
-import { MeetingCard } from '@/components/MeetingCard';
+import { Routes } from 'app/src/navigation/routes';
+import { MeetingCard } from 'app/src/components/MeetingCard';
 import { FontAwesome5 } from '@expo/vector-icons';
 const formatTime = (date: Date) => {
   return date.toLocaleTimeString('en-US', {

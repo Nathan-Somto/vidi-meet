@@ -1,11 +1,11 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Routes } from './routes';
-import CallScreen from '@/screens/Call/CallScreen';
-import JoinMeetingScreen from '@/screens/Call/JoinMeeting';
-import ScheduleMeetingScreen from '@/screens/Call/ScheduleMeeting';
-import VideoPlayerScreen from '@/screens/Call/VideoPlayerScreen';
-import MeetingSetupScreen from '@/screens/Call/MeetingSetupScreen';
+import CallScreen from 'app/src/screens/Call/CallScreen';
+import JoinMeetingScreen from 'app/src/screens/Call/JoinMeeting';
+import ScheduleMeetingScreen from 'app/src/screens/Call/ScheduleMeeting';
+import VideoPlayerScreen from 'app/src/screens/Call/VideoPlayerScreen';
+import MeetingSetupScreen from 'app/src/screens/Call/MeetingSetupScreen';
 export type CallStackParamList = {
   [Routes.CALL]: undefined;
   [Routes.JOINMEETING]: {

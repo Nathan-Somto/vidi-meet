@@ -1,13 +1,13 @@
 import 'react-native-gesture-handler';
 import * as SecureStore from 'expo-secure-store';
 import { ThemeProvider } from '@shopify/restyle';
-import { FontFamily, theme } from '@/theme';
+import { FontFamily, theme } from 'app/src/theme';
 import { useFonts } from 'expo-font';
-import RootStack from '@/navigation';
+import RootStack from 'app/src/navigation';
 import { ClerkLoaded, ClerkProvider } from '@clerk/clerk-expo';
 import { FontAwesome } from '@expo/vector-icons';
 import React from 'react';
-import { AnimatedSplashScreen } from '@/components/AnimatedSplashScreen';
+import { AnimatedSplashScreen } from 'app/src/components/AnimatedSplashScreen';
 import FontRegular from './assets/fonts/Inter-Regular.ttf';
 import FontMedium from './assets/fonts/Inter-Medium.ttf';
 import FontSemiBold from './assets/fonts/Inter-SemiBold.ttf';
@@ -17,7 +17,7 @@ const tokenCache = {
     try {
       return await SecureStore.getItemAsync(key);
     } catch (error) {
-      console.log("get Token Error", error);
+      console.log('get Token Error', error);
       await SecureStore.deleteItemAsync(key);
       return null;
     }
@@ -26,7 +26,7 @@ const tokenCache = {
     try {
       return SecureStore.setItemAsync(key, value);
     } catch (error) {
-      console.log("save Token Error", error);
+      console.log('save Token Error', error);
       return;
     }
   },
@@ -49,13 +49,13 @@ export default function App() {
     setRemoveSplash(true);
   }, []);
   React.useEffect(() => {
-    if(error){
+    if (error) {
       throw new Error('Error loading fonts');
     }
-  }, [error])
+  }, [error]);
   React.useEffect(() => {
     function prepare() {
-      if(loaded){
+      if (loaded) {
         setIsAppReady(true);
       }
     }

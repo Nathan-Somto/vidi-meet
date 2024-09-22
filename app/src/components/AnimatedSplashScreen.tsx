@@ -1,6 +1,6 @@
-import { Box, makeStyles } from '@/theme';
+import { Box, makeStyles } from 'app/src/theme';
 import React from 'react';
-import Logo from '../../assets/icon.png'; 
+import Logo from '../../assets/icon.png';
 import { Animated, Image, StyleSheet, Text } from 'react-native';
 type Props = {
   isAppReady: boolean;
@@ -56,7 +56,7 @@ export function AnimatedSplashScreen({ isAppReady, showApp }: Props) {
   const themeStyles = React.useMemo(() => styles(), []);
   return (
     <Animated.View style={[themeStyles.container, { opacity: splashOpacity }]}>
-      <Box flexDirection="row" alignItems='center'>
+      <Box flexDirection="row" alignItems="center">
         {/* Logo animation */}
         <Animated.View
           style={{

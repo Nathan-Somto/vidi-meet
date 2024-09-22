@@ -1,9 +1,9 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Routes } from './routes';
-import WelcomeScreen from '@/screens/Auth/WelcomeScreen';
-import AuthScreen from '@/screens/Auth/AuthScreen';
-import VerifyScreen from '@/screens/Auth/VerifyScreen';
+import WelcomeScreen from 'app/src/screens/Auth/WelcomeScreen';
+import AuthScreen from 'app/src/screens/Auth/AuthScreen';
+import VerifyScreen from 'app/src/screens/Auth/VerifyScreen';
 export type AuthStackParamList = {
   [Routes.WELCOME]: undefined;
   [Routes.AUTH]: {
