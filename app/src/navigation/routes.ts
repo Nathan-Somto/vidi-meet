@@ -9,10 +9,11 @@ export enum Routes {
     JOINMEETING = 'Join Meeting',
     MEETINGSETUP = 'Meeting Setup',
     NEWMEETING = 'New Meeting',
-    VIDEOPLAYER = 'Video Player',
+    VIDEOPLAYER = 'Video',
     CALL = 'Call',
     AUTH = 'Auth',
     VERIFY = 'Verify',
+    USERLIST= 'Users',
     // NAVIGATION
     AUTHSTACK= 'AuthStack',
     CALLSTACK = 'CallStack',
