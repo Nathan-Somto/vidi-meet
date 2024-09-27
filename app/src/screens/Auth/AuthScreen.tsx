@@ -14,15 +14,19 @@ export default function AuthScreen({ route }: StackScreenProps<AuthStackParamLis
   const router = useNavigation();
   const { signUp, isLoaded: isSignUpLoaded } = useSignUp();
   const { signIn, isLoaded: isSignInLoaded } = useSignIn();
+  const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const [emailAddress, setEmailAddress] = React.useState('');
-  const activateAuth = false;
+  const [username, setUsername] = React.useState<string>('');
+  const activateAuth = true;
   async function handleSubmit() {
     if (!isSignUpLoaded && !signUp) return null;
     if (!isSignInLoaded && !signIn) return null;
+    setIsLoading(true);
     try {
-      if (type === 'sign in') {
+      if (type === 'sign up') {
         await signUp.create({
           emailAddress,
+          username,
         });
         await signUp.prepareEmailAddressVerification();
       } else {
@@ -43,11 +47,13 @@ export default function AuthScreen({ route }: StackScreenProps<AuthStackParamLis
       }
       router.navigate(Routes.AUTHSTACK, {
         screen: Routes.VERIFY,
-        params: { email: emailAddress },
+        params: { email: emailAddress, isSignIn: type === 'sign in' },
       });
     } catch (err) {
       console.error('Error:', JSON.stringify(err, null, 2));
       Alert.alert('Error', 'Failed to Send Otp');
+    } finally {
+      setIsLoading(false);
     }
   }
   function handleChangeText(label: string, text: string) {
@@ -69,11 +75,26 @@ export default function AuthScreen({ route }: StackScreenProps<AuthStackParamLis
             }}
           />
           <Text textAlign="center" variant="body" color="neutral" marginBottom="xs_4">
-            Sign {type === 'sign in' ? 'in' : 'up'} via your email account
+            Sign {type === 'sign in' ? 'in via your email account' : 'up with a username and email'}
           </Text>
         </Box>
 
         <Box>
+          {type === 'sign up' && (
+            <>
+              <FormInput
+                label="username"
+                showLabel={false}
+                placeholder="Username"
+                handleChangeText={(label, text) => setUsername(text)}
+                value={username}
+                Icon={() => (
+                  <Feather name="user" size={20} color="#6C757D" style={{ marginRight: 8 }} />
+                )}
+              />
+              <Box height={15} />
+            </>
+          )}
           <FormInput
             label="email"
             showLabel={false}
@@ -99,14 +120,18 @@ export default function AuthScreen({ route }: StackScreenProps<AuthStackParamLis
             </Button>
           )}
           <Button
+            isLoading={isLoading}
             marginTop="m_24"
             onPress={
               activateAuth
                 ? handleSubmit
                 : () =>
-                  router.navigate(Routes.MAINTABS, {
-                    screen: Routes.HOME
-                  })
+                    router.navigate(Routes.AUTHENTICATEDSTACK, {
+                      screen: Routes.MAINTABS,
+                      params: {
+                        screen: Routes.HOME,
+                      },
+                    })
             }>
             <Text variant="title" style={{ marginRight: 2.5 }}>
               Sign {type === 'sign in' ? 'in' : 'up'}
