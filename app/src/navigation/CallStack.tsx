@@ -1,32 +1,50 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Routes } from './routes';
-import CallScreen from 'app/src/screens/Call/CallScreen';
-import JoinMeetingScreen from 'app/src/screens/Call/JoinMeeting';
-import ScheduleMeetingScreen from 'app/src/screens/Call/ScheduleMeeting';
-import VideoPlayerScreen from 'app/src/screens/Call/VideoPlayerScreen';
-import MeetingSetupScreen from 'app/src/screens/Call/MeetingSetupScreen';
+import CallScreen from '@/screens/Call/CallScreen';
+import MeetingSetupScreen from '@/screens/Call/CallSetupScreen';
+import { useTheme } from '@/theme';
+import StreamCallProvider from '@/components/StreamCallProvider';
+import CallEndedScreen from '@/screens/Call/CallEndedScreen';
+export type UserListData = { id: string; name: string }[];
 export type CallStackParamList = {
   [Routes.CALL]: undefined;
-  [Routes.JOINMEETING]: {
-    inviteId?: string;
+  [Routes.CALLSETUP]: undefined;
+  [Routes.CALLENDED]: {
+    endedBy: string | null;
+    startedAt: string | Date | null;
+    endedAt: string | Date | null;
+    hasEnded?: boolean;
+    showRateCall?: boolean;
   };
-  [Routes.SCHEDULEMEETING]: undefined;
-  [Routes.VIDEOPLAYER]: {
-    url: string;
-  };
-  [Routes.MEETINGSETUP]: undefined;
 };
 
 const Stack = createStackNavigator<CallStackParamList>();
-export default function CallStack() {
+function CallStack() {
+  const { colors } = useTheme();
   return (
-    <Stack.Navigator>
-      <Stack.Screen name={Routes.CALL} component={CallScreen} />
-      <Stack.Screen name={Routes.JOINMEETING} component={JoinMeetingScreen} />
-      <Stack.Screen name={Routes.SCHEDULEMEETING} component={ScheduleMeetingScreen} />
-      <Stack.Screen name={Routes.VIDEOPLAYER} component={VideoPlayerScreen} />
-      <Stack.Screen name={Routes.MEETINGSETUP} component={MeetingSetupScreen} />
+    <Stack.Navigator
+      screenOptions={{
+        headerStyle: {
+          backgroundColor: colors.secondary,
+        },
+        headerTintColor: colors.text,
+      }}
+      initialRouteName={Routes.CALLSETUP}>
+      <Stack.Screen name={Routes.CALLSETUP} component={MeetingSetupScreen} />
+      <Stack.Screen name={Routes.CALL} component={CallScreen} options={{ headerShown: false }} />
+      <Stack.Screen
+        name={Routes.CALLENDED}
+        component={CallEndedScreen}
+        options={{ headerShown: false }}
+      />
     </Stack.Navigator>
+  );
+}
+export default function CallStackWithProvider() {
+  return (
+    <StreamCallProvider>
+      <CallStack />
+    </StreamCallProvider>
   );
 }

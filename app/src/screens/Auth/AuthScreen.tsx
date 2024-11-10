@@ -1,76 +1,145 @@
 import { Container } from '@/components/Container';
 import { Routes } from '@/navigation/routes';
-import { Button, Text } from '@/theme';
+import { Box, Button, FormInput, Text } from '@/theme';
+import { useSignIn, useSignUp } from '@clerk/clerk-expo';
+import { Feather } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
-
-export default function AuthScreen() {
+import { Alert, Image } from 'react-native';
+import Logo from '../../../assets/icon.png';
+import { AuthStackParamList } from '@/navigation/AuthStack';
+import { StackScreenProps } from '@react-navigation/stack';
+export default function AuthScreen({ route }: StackScreenProps<AuthStackParamList, Routes.AUTH>) {
+  const { type } = route.params;
   const router = useNavigation();
-
-  /* async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-
-    if (!isLoaded && !signUp) return null
-
+  const { signUp, isLoaded: isSignUpLoaded } = useSignUp();
+  const { signIn, isLoaded: isSignInLoaded } = useSignIn();
+  const [isLoading, setIsLoading] = React.useState<boolean>(false);
+  const [emailAddress, setEmailAddress] = React.useState('');
+  const [username, setUsername] = React.useState<string>('');
+  const activateAuth = true;
+  async function handleSubmit() {
+    if (!isSignUpLoaded && !signUp) return null;
+    if (!isSignInLoaded && !signIn) return null;
+    setIsLoading(true);
     try {
-      // Start the sign-up process using the phone number method
-      await signUp.create({
-        phoneNumber: phone,
-      })
-
-      // Start the verification - a SMS message will be sent to the
-      // number with a one-time code
-      await signUp.preparePhoneNumberVerification()
-
-      // Set verifying to true to display second form and capture the OTP code
-      setVerifying(true)
-    } catch (err) {
-      // See https://clerk.com/docs/custom-flows/error-handling
-      // for more info on error handling
-      console.error('Error:', JSON.stringify(err, null, 2))
-    }
-  }
-
-  async function handleVerification(e: React.FormEvent) {
-    e.preventDefault()
-
-    if (!isLoaded && !signUp) return null
-
-    try {
-      // Use the code provided by the user and attempt verification
-      const signInAttempt = await signUp.attemptPhoneNumberVerification({
-        code,
-      })
-
-      // If verification was completed, set the session to active
-      // and redirect the user
-      if (signInAttempt.status === 'complete') {
-        await setActive({ session: signInAttempt.createdSessionId })
-
-        router.push('/')
+      if (type === 'sign up') {
+        await signUp.create({
+          emailAddress,
+          username,
+        });
+        await signUp.prepareEmailAddressVerification();
       } else {
-        // If the status is not complete, check why. User may need to
-        // complete further steps.
-        console.error(signInAttempt)
+        const { supportedFirstFactors } = await signIn.create({
+          identifier: emailAddress,
+        });
+        const emailCodeFactor = supportedFirstFactors?.find((factor) => {
+          return factor.strategy === 'email_code';
+        });
+        if (!emailCodeFactor) {
+          throw new Error('Email code factor not supported');
+        }
+        const { emailAddressId } = emailCodeFactor;
+        await signIn.prepareFirstFactor({
+          strategy: 'email_code',
+          emailAddressId,
+        });
       }
+      router.navigate(Routes.AUTHSTACK, {
+        screen: Routes.VERIFY,
+        params: { email: emailAddress, isSignIn: type === 'sign in' },
+      });
     } catch (err) {
-      // See https://clerk.com/docs/custom-flows/error-handling
-      // for more info on error handling
-      console.error('Error:', JSON.stringify(err, null, 2))
+      console.error('Error:', JSON.stringify(err, null, 2));
+      Alert.alert('Error', 'Failed to Send Otp');
+    } finally {
+      setIsLoading(false);
     }
   }
- */
+  function handleChangeText(label: string, text: string) {
+    if (label === 'email') {
+      setEmailAddress(text);
+    }
+  }
   return (
     <Container>
-      <Text>AuthScreen</Text>
-      <Button
-        label="Sign In"
-        onPress={() =>
-          router.navigate(Routes.MAINTABS, {
-            screen: Routes.HOME,
-          })
-        }
-      />
+      <Box width={'100%'} paddingHorizontal="m_16" justifyContent="space-evenly" flex={0.7}>
+        <Box>
+          <Image
+            source={Logo}
+            style={{
+              height: 100,
+              width: 100,
+              marginHorizontal: 'auto',
+              marginBottom: 12,
+            }}
+          />
+          <Text textAlign="center" variant="body" color="neutral" marginBottom="xs_4">
+            Sign {type === 'sign in' ? 'in via your email account' : 'up with a username and email'}
+          </Text>
+        </Box>
+
+        <Box>
+          {type === 'sign up' && (
+            <>
+              <FormInput
+                label="username"
+                showLabel={false}
+                placeholder="Username"
+                handleChangeText={(label, text) => setUsername(text)}
+                value={username}
+                Icon={() => (
+                  <Feather name="user" size={20} color="#6C757D" style={{ marginRight: 8 }} />
+                )}
+              />
+              <Box height={15} />
+            </>
+          )}
+          <FormInput
+            label="email"
+            showLabel={false}
+            placeholder="Email Address"
+            handleChangeText={handleChangeText}
+            value={emailAddress}
+            Icon={() => (
+              <Feather name="mail" size={20} color="#6C757D" style={{ marginRight: 8 }} />
+            )}
+          />
+          {type === 'sign up' && (
+            <Button
+              justifyContent="flex-start"
+              variant="link"
+              style={{ paddingHorizontal: 0 }}
+              onPress={() => {
+                router.navigate(Routes.AUTHSTACK, {
+                  screen: Routes.AUTH,
+                  params: { type: 'sign in' },
+                });
+              }}>
+              <Text color="inactive">Already have an account? Log In</Text>
+            </Button>
+          )}
+          <Button
+            isLoading={isLoading}
+            marginTop="m_24"
+            onPress={
+              activateAuth
+                ? handleSubmit
+                : () =>
+                    router.navigate(Routes.AUTHENTICATEDSTACK, {
+                      screen: Routes.MAINTABS,
+                      params: {
+                        screen: Routes.HOME,
+                      },
+                    })
+            }>
+            <Text variant="title" style={{ marginRight: 2.5 }}>
+              Sign {type === 'sign in' ? 'in' : 'up'}
+            </Text>
+            <Feather name="arrow-right" size={24} color="white" />
+          </Button>
+        </Box>
+      </Box>
     </Container>
   );
 }

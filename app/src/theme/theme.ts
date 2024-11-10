@@ -17,6 +17,7 @@ const palette = {
   secondary: '#1E1E1E',
   inactive: '#666666',
   neutral: '#6C757D',
+  success: '#00C851',
   destructive: '#FF4D4F',
   text: '#EDEDED',
   tabBackground: '#212B33',
@@ -28,10 +29,11 @@ const theme = createTheme({
     ...palette
   }, 
   size: {
+    xs: 2,
     s: 16,
     m: 24,
     lg: 30,
-    xl: 40,
+    xl: 50,
     xxl: 80,
   },
   spacing: {
@@ -52,6 +54,10 @@ const theme = createTheme({
     xl_24: 24,
   },
   textVariants: {
+    small: {
+      fontSize: 14,
+      fontFamily: FontFamily.regular,
+    },
     body: {
       fontSize: 16,
       fontFamily: FontFamily.regular,

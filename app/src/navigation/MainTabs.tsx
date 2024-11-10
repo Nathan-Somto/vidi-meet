@@ -1,16 +1,18 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Routes } from './routes';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { HomeIcon, PreviousIcon, UpcomingIcon, VideoIcon } from 'app/src/components/icons';
-import HomeScreen from 'app/src/screens/Main/HomeScreen';
-import { Box, Text, useTheme } from 'app/src/theme';
-import { BackButton } from 'app/src/components/BackButton';
-import { Image } from 'react-native';
-import UpcomingMeetingsScreen from 'app/src/screens/Main/UpcomingMeetingsScreen';
-import NewMeetingScreen from 'app/src/screens/Main/NewMeetingScreen';
-import PreviousMeetingScreen from 'app/src/screens/Main/PreviousMeetingScreen';
-import dummyAvatar from '../../assets/images/avatar.png';
+import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
+import { HomeIcon, PreviousIcon, UpcomingIcon, VideoIcon } from '@/components/icons';
+import HomeScreen from '@/screens/Main/HomeScreen';
+import { Box, Text, useTheme } from '@/theme';
+import { BackButton } from '@/components/BackButton';
+import { Image, Pressable } from 'react-native';
+import UpcomingMeetingsScreen from '@/screens/Main/UpcomingMeetingsScreen';
+import NewMeetingScreen from '@/screens/Main/NewMeetingScreen';
+import PreviousMeetingScreen from '@/screens/Main/PreviousMeetingScreen';
 import logo from '../../assets/icon.png';
+import MeetingRecordingsScreen from '@/screens/Main/MeetingRecordingsScreen';
+import { useUser } from '@clerk/clerk-expo';
+import { useNavigation } from '@react-navigation/native';
 export type MainTabParamList = {
   [Routes.HOME]: undefined;
   [Routes.UPCOMINGMEETINGS]: undefined;
@@ -31,7 +33,9 @@ function TabIcon({ name, color, size }: TabIconProps) {
   return <MaterialCommunityIcons name={name} size={size} color={color} />;
 }
 export function MainTabs() {
+  const { user } = useUser();
   const { colors, spacing } = useTheme();
+  const router = useNavigation();
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -39,8 +43,17 @@ export function MainTabs() {
           backgroundColor: colors.secondary,
           borderTopColor: 'transparent',
           paddingVertical: spacing.sm_8,
-          paddingHorizontal: spacing.m_16,
+          paddingHorizontal: spacing.xs_4,
+          height: 65,
+          justifyContent: 'center',
         },
+        tabBarLabelStyle: {
+          fontSize: 13.5,
+          fontWeight: '600',
+
+          paddingBottom: 5,
+        },
+
         tabBarActiveTintColor: colors.muted,
         tabBarInactiveTintColor: colors.inactive,
         headerStyle: {
@@ -50,18 +63,31 @@ export function MainTabs() {
           return <BackButton text={route.name} />;
         },
         headerRight() {
-          // user avatar
           return (
-            <Box
-              borderColor="primary"
-              borderWidth={2}
-              height={40}
-              width={40}
-              marginRight="sm_8"
-              overflow="hidden"
-              style={{ borderRadius: 50 }}>
-              <Image source={dummyAvatar} style={{ height: '100%', width: '100%' }} />
-            </Box>
+            <Pressable
+              onPress={() =>
+                router.navigate(Routes.AUTHENTICATEDSTACK, {
+                  screen: Routes.PROFILE,
+                })
+              }>
+              <Box
+                borderColor="primary"
+                borderWidth={2}
+                height={40}
+                width={40}
+                marginRight="sm_8"
+                overflow="hidden"
+                style={{ borderRadius: 50 }}>
+                {user?.imageUrl ? (
+                  <Image
+                    source={{ uri: user.imageUrl }}
+                    style={{ height: '100%', width: '100%' }}
+                  />
+                ) : (
+                  <Feather name="user" size={40} color={colors.neutral} />
+                )}
+              </Box>
+            </Pressable>
           );
         },
       })}>
@@ -95,10 +121,22 @@ export function MainTabs() {
       <Tab.Screen
         name={Routes.NEWMEETING}
         component={NewMeetingScreen}
-        options={{
-          title: 'New Meeting',
-          tabBarIcon: ({ color, size }) => <TabIcon name="video-plus" color={color} size={size} />,
-        }}
+        options={() => ({
+          title: undefined,
+          tabBarLabel: () => null,
+          tabBarIcon: ({ color, focused }) => (
+            <Box
+              borderWidth={focused ? 4 : 2}
+              height={40}
+              width={40}
+              overflow="hidden"
+              alignItems="center"
+              justifyContent="center"
+              style={{ borderRadius: 20, borderColor: color }}>
+              <TabIcon name="plus" color={color} size={30} />
+            </Box>
+          ),
+        })}
       />
       <Tab.Screen
         name={Routes.PREVIOUSMEETINGS}
@@ -110,7 +148,7 @@ export function MainTabs() {
       />
       <Tab.Screen
         name={Routes.MEETINGRECORDINGS}
-        component={() => null}
+        component={MeetingRecordingsScreen}
         options={{
           title: 'Recordings',
           tabBarIcon: ({ color, size }) => <VideoIcon color={color} size={size} />,

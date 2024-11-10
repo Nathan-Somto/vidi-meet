@@ -25,7 +25,7 @@ const BaseButton = createRestyleComponent<
 type Props = React.PropsWithChildren &
   React.ComponentProps<typeof BaseButton> &
   ColorProps<Theme> & {
-    size?: 'icon' | 'sm' | 'lg' | 'default';
+    size?: 'icon' | 'sm' | 'lg' | 'default' | 'none';
     label?: string;
     isLoading?: boolean;
   };
@@ -36,11 +36,25 @@ const Button = ({
   isLoading,
   variant = 'primary',
   size = 'default',
-  color='text',
+  color = 'text',
   ...props
 }: Props) => {
-  const py = size === 'icon' || size === 'sm' ? 'xs_4' : size === 'default' ? 'sm_8' : 'm_16';
-  const px = size === 'icon' || size === 'sm' ? 'sm_8' : size === 'default' ? 'm_16' : 'm_24';
+  const py =
+    size === 'icon' || size === 'sm'
+      ? 'xs_4'
+      : size === 'default'
+        ? 'sm_8'
+        : variant === 'link'
+          ? undefined
+          : 'm_16';
+  const px =
+    size === 'icon' || size === 'sm'
+      ? 'sm_8'
+      : size === 'default'
+        ? 'm_16'
+        : variant === 'link'
+          ? undefined
+          : 'm_24';
   const theme = useTheme();
   return (
     <BaseButton
@@ -54,8 +68,9 @@ const Button = ({
       disabled={isLoading}
       height={50}
       {...props}>
-      {isLoading ? <ActivityIndicator color={theme.colors.text} /> : null}
-      {label ? (
+      {isLoading ? (
+        <ActivityIndicator color={theme.colors.text} />
+      ) : label ? (
         <Text variant="body" color={color} textAlign="center" fontWeight={'600'}>
           {label}
         </Text>

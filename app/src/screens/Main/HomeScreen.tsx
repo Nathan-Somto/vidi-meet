@@ -1,44 +1,44 @@
-import { Container } from 'app/src/components/Container';
-import { Box, Button, Text } from 'app/src/theme';
+import { Container } from '@/components/Container';
+import { Box, Text, useTheme } from '@/theme';
 import React from 'react';
-import { Dimensions, ImageBackground, ScrollView, TouchableOpacity } from 'react-native';
+import {
+  Dimensions,
+  ImageBackground,
+  TouchableOpacity,
+  FlatList,
+  ActivityIndicator,
+  ScrollView,
+} from 'react-native';
 import banner from '../../../assets/images/banner.png';
-import { FlatList } from 'react-native-gesture-handler';
-import { ActionButtons } from 'app/src/constants';
+import { ActionButtons } from '@/constants';
 import { useNavigation } from '@react-navigation/native';
-import { Routes } from 'app/src/navigation/routes';
-import { MeetingCard } from 'app/src/components/MeetingCard';
-import { FontAwesome5 } from '@expo/vector-icons';
-const formatTime = (date: Date) => {
-  return date.toLocaleTimeString('en-US', {
-    hour: '2-digit',
-    minute: '2-digit',
-  });
-};
+import { Routes } from '@/navigation/routes';
+import { FontAwesome5, MaterialIcons } from '@expo/vector-icons';
+import MeetingList from '@/components/MeetingList';
+import { formatDate, formatTime, splitIntoMeridiemAndTime } from '@/utils';
+
 export default function HomeScreen() {
+  const { colors } = useTheme();
   const firstName = 'Nathan';
-  const upcomingMeeting = {
-    title: 'Family Meeting',
-    scheduleDate: new Date(),
-    id: '1234',
-  };
-  const currentTime = formatTime(new Date());
-  const currentTimeArr = currentTime.replace(/w+/, '').split(/w+/);
-  console.log('currentTimeArr', currentTimeArr);
-  const currentDate = new Intl.DateTimeFormat('en-US', {
-    dateStyle: 'full',
-  }).format(new Date());
+  const [currentTime, meridiem] = splitIntoMeridiemAndTime(formatTime(new Date()));
+  const currentDate = formatDate(new Date());
   const imageWidth = Dimensions.get('window').width * 0.95;
   const router = useNavigation();
   return (
     <Container>
-      <ImageBackground
-        source={banner}
-        imageStyle={{ borderRadius: 16 }}
-        style={{ height: 230, width: imageWidth, marginVertical: 30 }}
-        resizeMode="cover">
-        <Box padding="m_16">
-          {upcomingMeeting !== null && (
+      <Box flex={1} justifyContent="flex-start" width="100%">
+        <ImageBackground
+          source={banner}
+          imageStyle={{ borderRadius: 16 }}
+          style={{
+            height: 230,
+            width: imageWidth,
+            marginBottom: 30,
+            marginTop: 25,
+            marginHorizontal: 'auto',
+          }}
+          resizeMode="cover">
+          <Box padding="m_16">
             <Box
               paddingHorizontal="sm_12"
               paddingVertical="sm_8"
@@ -53,105 +53,114 @@ export default function HomeScreen() {
                 fontWeight={'medium'}>
                 Welcome Back,{' '}
                 <Text variant="title" fontWeight={'semibold'}>
-                  {firstName}👋
+                  {firstName} 👋
                 </Text>
               </Text>
             </Box>
-          )}
-          <Box>
-            <Text variant="extra_large" style={{ marginBottom: 2 }}>
-              {currentTimeArr[0]}{' '}
-            </Text>
-            <Text variant="title" color="neutral" fontWeight={'medium'}>
-              {currentDate}
+            <Box>
+              <Text variant="extra_large" style={{ marginBottom: 2 }}>
+                {currentTime}
+                <Text variant="large">{meridiem}</Text>
+              </Text>
+              <Text variant="title" color="neutral" fontWeight={'medium'}>
+                {currentDate}
+              </Text>
+            </Box>
+            <Box></Box>
+          </Box>
+        </ImageBackground>
+        {/* Action Buttons */}
+        <Box>
+          <FlatList
+            data={ActionButtons}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            keyExtractor={(item) => item.id.toString()}
+            contentContainerStyle={{ marginHorizontal: 6, alignItems: 'center' }}
+            renderItem={({ item: { Icon, color, screen, text } }) => (
+              <TouchableOpacity
+                style={{ marginHorizontal: 8, height: 100 }}
+                onPress={() =>
+                  screen === Routes.SCHEDULEMEETING
+                    ? router.navigate(Routes.AUTHENTICATEDSTACK, {
+                        screen: Routes.MEETINGSTACK,
+                        params: {
+                          screen,
+                        },
+                      })
+                    : screen === Routes.JOINMEETING
+                      ? router.navigate(Routes.AUTHENTICATEDSTACK, {
+                          screen: Routes.MEETINGSTACK,
+                          params: { screen, params: { inviteId: '' } },
+                        })
+                      : router.navigate(Routes.AUTHENTICATEDSTACK, {
+                          screen: Routes.MAINTABS,
+                          params: { screen },
+                        })
+                }>
+                <>
+                  <Box
+                    style={{ backgroundColor: color, marginHorizontal: 'auto' }}
+                    height={65}
+                    width={65}
+                    borderRadius="s_4"
+                    justifyContent="center"
+                    alignItems="center"
+                    padding="xs_4">
+                    <Box
+                      height={45}
+                      width={45}
+                      borderRadius="s_4"
+                      justifyContent="center"
+                      alignItems="center"
+                      style={{ backgroundColor: 'rgba(255,255,255,0.37)' }}>
+                      <Icon />
+                    </Box>
+                  </Box>
+                  <Text variant="body" marginTop="xs_4" color="neutral">
+                    {text}
+                  </Text>
+                </>
+              </TouchableOpacity>
+            )}
+          />
+        </Box>
+        <Box
+          alignItems="center"
+          flexDirection="row"
+          width="100%"
+          style={{ paddingHorizontal: 16, marginBottom: 32, marginTop: 20 }}
+          justifyContent="space-between">
+          <Text variant="title" textAlign="left" fontWeight="semibold">
+            OnGoing Meetings
+          </Text>
+          <Box marginLeft="sm_8" justifyContent="center" flexDirection="row" alignItems="center">
+            <MaterialIcons name="fiber-manual-record" size={16} color="red" />
+            <Text variant="small" color="destructive">
+              Live
             </Text>
           </Box>
-          <Box></Box>
         </Box>
-      </ImageBackground>
-      {/* Action Buttons */}
-      <FlatList
-        data={ActionButtons}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        keyExtractor={(item) => item.id.toString()}
-        contentContainerStyle={{ marginHorizontal: 6 }}
-        renderItem={({ item: { Icon, color, screen, text } }) => (
-          <TouchableOpacity
-            style={{ marginHorizontal: 6 }}
-            onPress={() =>
-              screen === Routes.SCHEDULEMEETING
-                ? router.navigate(Routes.CALLSTACK, {
-                    screen,
-                  })
-                : screen === Routes.JOINMEETING
-                  ? router.navigate(Routes.CALLSTACK, { screen, params: { inviteId: '' } })
-                  : router.navigate(Routes.MAINTABS, { screen })
-            }>
-            <>
-              <Box
-                style={{ backgroundColor: color, marginHorizontal: 'auto' }}
-                height={50}
-                width={50}
-                borderRadius="s_4"
-                justifyContent="center"
-                alignItems="center"
-                padding="xs_4">
-                <Box
-                  height={30}
-                  width={30}
-                  borderRadius="s_4"
-                  justifyContent="center"
-                  alignItems="center"
-                  style={{ backgroundColor: 'rgba(255,255,255,0.37)' }}>
-                  <Icon />
-                </Box>
+        <MeetingList
+          type="ongoing"
+          CustomEmptyMsgComponent={() => (
+            <ScrollView>
+              <Box alignItems="center">
+                <FontAwesome5 name="calendar-times" size={80} color="rgba(255,255,255,0.5)" />
+                <Text variant="title" marginTop="m_16" fontWeight={'semibold'}>
+                  No OnGoing Meeting
+                </Text>
               </Box>
-              <Text variant="body" marginTop="xs_4" color="neutral">
-                {text}
-              </Text>
-            </>
-          </TouchableOpacity>
-        )}
-      />
-      <Box
-        flexDirection="row"
-        justifyContent="space-between"
-        marginBottom="sm_8"
-        alignItems="center">
-        <Text variant="title" fontWeight={'semibold'}>
-          Today{"'"}s Upcoming Meetings
-        </Text>
-        <Button
-          label="See All"
-          variant="link"
-          color="neutral"
-          style={{ padding: 0 }}
-          onPress={() =>
-            router.navigate(Routes.MAINTABS, {
-              screen: Routes.UPCOMINGMEETINGS,
-            })
-          }
+            </ScrollView>
+          )}
+          useContainer={false}
+          CustomLoaderComponent={() => (
+            <Box alignItems="center" width="100%">
+              <ActivityIndicator color={colors.text} size={'small'} />
+            </Box>
+          )}
         />
       </Box>
-      {/* Just One Upcoming Meeting Card is shown */}
-      <ScrollView>
-        {upcomingMeeting === null ? (
-          <Box>
-            <FontAwesome5 name="calendar-times" size={80} color="rgba(255,255,255,0.5)" />
-            <Text variant="title" marginTop="m_16" fontWeight={'semibold'}>
-              No Upcoming Meetings
-            </Text>
-          </Box>
-        ) : (
-          <MeetingCard
-            type="upcoming"
-            title="Family Meeting"
-            scheduleDate={new Date()}
-            id={'1234'}
-          />
-        )}
-      </ScrollView>
     </Container>
   );
 }

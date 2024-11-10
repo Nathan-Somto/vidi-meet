@@ -1,16 +1,17 @@
 import 'react-native-gesture-handler';
 import * as SecureStore from 'expo-secure-store';
 import { ThemeProvider } from '@shopify/restyle';
-import { FontFamily, theme } from 'app/src/theme';
+import { FontFamily, theme } from '@/theme';
 import { useFonts } from 'expo-font';
-import RootStack from 'app/src/navigation';
+import RootStack from '@/navigation';
 import { ClerkLoaded, ClerkProvider } from '@clerk/clerk-expo';
 import { FontAwesome } from '@expo/vector-icons';
 import React from 'react';
-import { AnimatedSplashScreen } from 'app/src/components/AnimatedSplashScreen';
+import { AnimatedSplashScreen } from '@/components/AnimatedSplashScreen';
 import FontRegular from './assets/fonts/Inter-Regular.ttf';
 import FontMedium from './assets/fonts/Inter-Medium.ttf';
 import FontSemiBold from './assets/fonts/Inter-SemiBold.ttf';
+
 const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
 const tokenCache = {
   async getToken(key: string) {

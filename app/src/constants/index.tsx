@@ -1,7 +1,7 @@
 import { Feather, FontAwesome } from '@expo/vector-icons';
 import Welcome1 from '../../assets/images/welcome1.png';
 import Welcome2 from '../../assets/images/welcome2.png';
-import { Routes } from 'app/src/navigation/routes';
+import { Routes } from '@/navigation/routes';
 export const welcomeData = [
   {
     id: 1,
@@ -16,7 +16,7 @@ export const welcomeData = [
     image: Welcome2,
   },
 ];
-const SIZE = 25;
+const SIZE = 30;
 export const ActionButtons = [
   {
     text: 'New Meeting',

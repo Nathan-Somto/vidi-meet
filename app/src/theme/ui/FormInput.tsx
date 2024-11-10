@@ -6,10 +6,12 @@ import { createBox } from '@shopify/restyle';
 import { Theme, useTheme } from '../theme';
 const BaseTextInput = createBox<Theme, TextInputProps>(TextInput);
 type props<T extends string> = Omit<
-  React.ComponentProps<typeof BaseTextInput>,
+  TextInputProps,
   'style' | 'onChangeText'
 > & {
   label: T;
+  showLabel?: boolean
+  Icon?: () => JSX.Element;
   handleChangeText: (label: T, text: string) => void;
 };
 export default function FormInput<T extends string>({
@@ -17,26 +19,32 @@ export default function FormInput<T extends string>({
   label,
   placeholder,
   value,
+  showLabel = true,
+  Icon,
   ...props
 }: props<T>) {
   const { colors, size } = useTheme();
   return (
     <Box>
-      <Text variant={'title'} marginBottom="sm_8">
-        {label}
-      </Text>
+      {showLabel && (
+        <Text variant="title" marginBottom="sm_8">
+          {label}
+        </Text>
+      )}
       <Box
         flexDirection="row"
-        borderRadius="s_3"
+        borderRadius="s_4"
         backgroundColor="secondary"
         paddingHorizontal="m_16"
-        height={size.lg}>
+        alignItems='center'
+        height={size.xl}>
+        {Icon && <Icon />}
         <BaseTextInput
           onChangeText={(text) => handleChangeText(label, text)}
           value={value}
           placeholder={placeholder}
           placeholderTextColor={colors.neutral}
-          flex={1}
+          flex={Icon ? 0.7: 1}
           textAlign="left"
           style={{
             color: colors.text,
