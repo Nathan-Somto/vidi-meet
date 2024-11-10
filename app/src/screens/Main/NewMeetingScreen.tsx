@@ -1,10 +1,11 @@
-import { Box, Text } from 'app/src/theme';
+import { Container } from '@/components/Container';
+import MeetingForm from '@/components/MeetingForm';
 import React from 'react';
 
 export default function NewMeetingScreen() {
   return (
-    <Box>
-      <Text>NewMeetingScreen</Text>
-    </Box>
+    <Container>
+      <MeetingForm type="instant" />
+    </Container>
   );
 }

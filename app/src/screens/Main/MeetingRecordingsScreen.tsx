@@ -1,10 +1,7 @@
-import { Box, Text } from 'app/src/theme';
+import MeetingList from '@/components/MeetingList';
 import React from 'react';
 
 export default function MeetingRecordingsScreen() {
-  return (
-    <Box>
-      <Text>MeetingRecordingsScreen</Text>
-    </Box>
-  );
+  console.log('MeetingRecordingsScreen');
+  return <MeetingList type="recorded" />;
 }

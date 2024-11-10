@@ -1,4 +1,4 @@
-import { Box, makeStyles } from 'app/src/theme';
+import { Box, makeStyles } from '@/theme';
 import React from 'react';
 import Logo from '../../assets/icon.png';
 import { Animated, Image, StyleSheet, Text } from 'react-native';

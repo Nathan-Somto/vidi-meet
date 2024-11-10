@@ -1,17 +1,17 @@
 import { Container } from '@/components/Container';
 import VideoPlayer from '@/components/VideoPlayer';
-import { CallStackParamList } from '@/navigation/CallStack';
 import { Routes } from '@/navigation/routes';
 import { Box, Text, Button, useToast } from '@/theme';
 import { StackScreenProps } from '@react-navigation/stack';
 import React from 'react';
 import { MaterialIcons } from '@expo/vector-icons';
 import * as Sharing from 'expo-sharing';
-import { formatTime } from '@/utils';
+import { formatTotalTime } from '@/utils';
+import { MeetingStackParamList } from '@/navigation/MeetingStack';
 
 export default function VideoPlayerScreen({
   route,
-}: StackScreenProps<CallStackParamList, Routes.VIDEOPLAYER>) {
+}: StackScreenProps<MeetingStackParamList, Routes.VIDEOPLAYER>) {
   const { url, title, duration } = route.params;
   const { toast } = useToast();
 
@@ -36,7 +36,7 @@ export default function VideoPlayerScreen({
           <Text variant="body" color="neutral">
             Duration:{' '}
             <Text color="text" fontWeight={'semibold'}>
-              {formatTime(duration)}
+              {formatTotalTime(duration)}
             </Text>
           </Text>
         </Box>

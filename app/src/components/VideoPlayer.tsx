@@ -11,7 +11,7 @@ import { Box, Button, Text, useTheme } from '@/theme';
 import { MaterialIcons, FontAwesome } from '@expo/vector-icons';
 import { AVPlaybackStatus, ResizeMode, Video } from 'expo-av';
 import Slider from '@react-native-community/slider';
-import { formatTime } from '@/utils';
+import { formatTotalTime } from '@/utils';
 
 type VideoPlayerProps = {
   source: string;
@@ -167,8 +167,8 @@ export default function VideoPlayer({
                 <View style={styles.sliderTimeContainer}>
                   <View style={styles.row}>
                     <View style={styles.timeContainer}>
-                      <Text>{formatTime(playbackStatus?.positionMillis ?? 0)} / </Text>
-                      <Text>{formatTime(playbackStatus?.playableDurationMillis ?? 0)}</Text>
+                      <Text>{formatTotalTime(playbackStatus?.positionMillis ?? 0)} / </Text>
+                      <Text>{formatTotalTime(playbackStatus?.playableDurationMillis ?? 0)}</Text>
                     </View>
                     <Button variant="link" onPress={toggleFullScreen}>
                       <MaterialIcons name="fullscreen" size={24} color="white" />

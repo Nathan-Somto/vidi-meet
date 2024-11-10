@@ -1,85 +1,71 @@
 import React, { useState } from 'react';
-import { FlatList, TextInput, Image, Pressable } from 'react-native';
-import { Box, Text, Button, useTheme } from '@/theme';
+import { FlatList, TextInput, Image, Pressable, ActivityIndicator } from 'react-native';
+import { Box, Text, Button, useTheme, useToast } from '@/theme';
 import { AntDesign, Feather, FontAwesome } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import { CallStackParamList } from '@/navigation/CallStack';
 import { Routes } from '@/navigation/routes';
 import { StackScreenProps } from '@react-navigation/stack';
 import { useUserListStore } from '@/hooks/useUserListStore';
+import { MeetingStackParamList } from '@/navigation/MeetingStack';
+import { useUser } from '@clerk/clerk-expo';
+import { getName } from '@/utils';
 
 type UserData = {
   id: string;
   firstName?: string;
   lastName?: string;
-  userName?: string;
+  username?: string;
   hasImage?: boolean;
   emailAddresses: { emailAddress: string }[];
   imageUrl: string;
 }[];
-const userData: UserData = [
-  {
-    id: '1',
-    firstName: 'John',
-    lastName: 'Doe',
-    emailAddresses: [{ emailAddress: 'johndoe@email.com' }],
-    imageUrl: 'https://i.pravatar.cc/300',
-  },
-  {
-    id: '2',
-    firstName: 'Jane',
-    lastName: 'Smith',
-    emailAddresses: [{ emailAddress: 'janesmith@email.com' }],
-    imageUrl: 'https://i.pravatar.cc/300',
-  },
-  {
-    id: '3',
-    firstName: 'Bill',
-    lastName: 'Smith',
-    emailAddresses: [{ emailAddress: 'bsmith@email.com' }],
-    imageUrl: 'https://i.pravatar.cc/300',
-  },
-  {
-    id: '4',
-    firstName: 'Gabe',
-    lastName: 'Smith',
-    emailAddresses: [{ emailAddress: 'gsmith@email.com' }],
-    imageUrl: 'https://i.pravatar.cc/300',
-  },
-  {
-    id: '5',
-    firstName: 'Geno',
-    lastName: 'Smith',
-    emailAddresses: [{ emailAddress: 'genosmith@email.com' }],
-    imageUrl: 'https://i.pravatar.cc/300',
-  },
-  {
-    id: '6',
-    firstName: 'Juju',
-    lastName: 'Smith',
-    emailAddresses: [{ emailAddress: 'jujusmith@email.com' }],
-    imageUrl: 'https://i.pravatar.cc/300',
-  },
-];
-const getName = ({
-  firstName,
-  lastName,
-  userName,
-}: Pick<UserData[number], 'firstName' | 'lastName' | 'userName'>) => {
-  return (firstName ?? '') + ' ' + (lastName ?? '') || (userName ?? '') || 'No Name';
-};
+
 export default function UserListScreen({
   navigation,
   route,
-}: StackScreenProps<CallStackParamList, Routes.USERLIST>) {
+}: StackScreenProps<MeetingStackParamList, Routes.USERLIST>) {
+  const { user } = useUser();
+  const { toast } = useToast();
+  const [userData, setUserData] = useState<UserData | null>(null);
+  const userDataCopyRef = React.useRef<UserData | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
   const { selectedUsers: initialSelectedUsers, setUsers, addUsers } = useUserListStore();
   const [selectedUsers, setSelectedUsers] = useState<Record<string, string>>({});
   const [searchQuery, setSearchQuery] = useState('');
   const [showCheckmarks, setShowCheckmarks] = useState(false);
   const { colors, spacing, size } = useTheme();
   const router = useNavigation();
+  React.useEffect(() => {
+    async function fetchUsers(userId: string) {
+      setLoading(true);
+      console.log('userId: ', userId);
+      try {
+        console.log('url: ', process.env.EXPO_PUBLIC_BACKEND_URL);
+        const res = await fetch(process.env.EXPO_PUBLIC_BACKEND_URL);
+        if (!res.ok) {
+          console.log('The Response: ', res);
+          throw new Error('Failed to fetch users');
+        }
+        const resData = await res.json();
+        console.log('the data: ', resData);
+        console.log('data ', JSON.stringify(resData.users.data, null, 2));
+        const filteredData = (resData.users.data as UserData).filter((user) => user.id != userId);
+        console.log('filtered data: ', JSON.stringify(filteredData, null, 2));
+        setUserData(filteredData);
+        userDataCopyRef.current = filteredData;
+      } catch (e) {
+        console.error(e);
+        toast({ message: 'failed to fetch users', variant: 'error' });
+      } finally {
+        setLoading(false);
+      }
+    }
+    if (user?.id && userData === null) {
+      fetchUsers(user?.id ?? '');
+    }
+  }, [user?.id]);
   const allUsersSelected = React.useMemo(
-    () => userData.length === Object.keys(selectedUsers).length,
+    () => userData?.length === Object.keys(selectedUsers).length,
     [selectedUsers]
   );
   React.useEffect(() => {
@@ -104,13 +90,14 @@ export default function UserListScreen({
     );
   };
   const selectAllUsers = () => {
+    if (userData === null) return;
     setSelectedUsers(
       allUsersSelected
         ? {}
         : userData.reduce(
-            (acc, { id, firstName, lastName, userName }) => ({
+            (acc, { id, firstName, lastName, username }) => ({
               ...acc,
-              [id]: getName({ firstName, lastName, userName }),
+              [id]: getName({ firstName, lastName, username }),
             }),
             {}
           )
@@ -124,23 +111,36 @@ export default function UserListScreen({
       setUsers(selectedUsersArray);
     }
     if (route.params.from === Routes.NEWMEETING) {
-      router.navigate(Routes.MAINTABS, { screen: Routes.NEWMEETING });
+      router.navigate(Routes.AUTHENTICATEDSTACK, {
+        screen: Routes.MAINTABS,
+        params: { screen: Routes.NEWMEETING },
+      });
     } else {
       navigation.navigate(Routes.SCHEDULEMEETING);
     }
   };
 
-  const filteredUsers = userData.filter((user) => {
-    const name = (user?.firstName ?? '') + ' ' + (user.lastName ?? '') || (user?.userName ?? '');
-    return name.toLowerCase().includes(searchQuery.toLowerCase());
-  });
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+    if (query === '') {
+      setUserData(userDataCopyRef.current);
+      return;
+    }
+    const filteredUsers =
+      userData?.filter((user) => {
+        const name =
+          (user?.firstName ?? '') + ' ' + (user.lastName ?? '') || (user?.username ?? '');
+        return name.toLowerCase().includes(searchQuery.toLowerCase());
+      }) ?? null;
+    setUserData(filteredUsers);
+  };
 
   const renderUser = ({ item }: { item: UserData[number] }) => {
     const isSelected = selectedUsers[item.id];
     const name = getName({
       firstName: item?.firstName,
       lastName: item?.lastName,
-      userName: item?.userName,
+      username: item?.username,
     });
     const email = item.emailAddresses[0].emailAddress;
     const handleLongPress = () => {
@@ -182,7 +182,7 @@ export default function UserListScreen({
               {email}
             </Text>
           </Box>
-          {/* Radio button for selecting user */}
+          {/* Check button for selecting user */}
           {showCheckmarks && (
             <Button
               variant={'link'}
@@ -254,7 +254,7 @@ export default function UserListScreen({
           placeholder="Search users..."
           placeholderTextColor={colors.neutral}
           value={searchQuery}
-          onChangeText={setSearchQuery}
+          onChangeText={handleSearch}
           style={{
             color: colors.text,
             flex: 0.8,
@@ -262,14 +262,19 @@ export default function UserListScreen({
         />
       </Box>
 
-      {/* User list with infinite scroll */}
-      <FlatList
-        data={filteredUsers}
-        renderItem={renderUser}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={{ paddingBottom: spacing.l_32 }}
-        onEndReachedThreshold={0.5}
-      />
+      {loading ? (
+        <ActivityIndicator size="large" color={colors.text} />
+      ) : userData === null || userData.length === 0 ? (
+        <Text variant="title">No User Found!</Text>
+      ) : (
+        <FlatList
+          data={userData}
+          renderItem={renderUser}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={{ paddingBottom: spacing.l_32 }}
+          onEndReachedThreshold={0.5}
+        />
+      )}
     </Box>
   );
 }
